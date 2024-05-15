@@ -1,0 +1,3 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station
+10,10,Dr. Lluch - Mare de Déu del Sufragi,C DOCTOR LLUCH 99 (DAVANT) - VALÈNCIA,39.4672336950355,-0.328305576746871,,,0,
+1007,1007,Jesús Morante Borràs (I),AV JESUS MORANTE BORRAS 26 - VALÈNCIA,39.4510148911155,-0.345434552993697,,,0,
