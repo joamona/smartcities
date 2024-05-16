@@ -6,4 +6,4 @@ Created on 4 jul 2023
 from myLib.fiware import Fiware
 upv=Fiware()
 
-upv.filterByType(etype='PP')
+upv.filterByType(etype='K2')

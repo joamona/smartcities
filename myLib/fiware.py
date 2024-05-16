@@ -13,9 +13,10 @@ import requests
 #class Fiware
 
 from myLib.fiwareAnswer import FiwareAnswer
+from myLib import fiwareSettings
 
 class Fiware():
-    def __init__(self, url='https://smartcities.upvusig.car.upv.es/fiware', user='joamona', printInfo=True):
+    def __init__(self, url=fiwareSettings.SERVER_URL, user=fiwareSettings.USERNAME, printInfo=True):
         #attributes
         self.url=url
         self.user=user
@@ -273,7 +274,6 @@ class Fiware():
         self.requesResult=requests.delete(url)
         fa:FiwareAnswer=FiwareAnswer(self.requesResult)
         return fa
-    
     
     def deleteAllMyEntities(self):
         fa1:FiwareAnswer=self.filterByUserAndProperties()

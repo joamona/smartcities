@@ -43,10 +43,7 @@ class FiwareAnswer():
     
     def printRequestAnswer(self):
         print('-----------------------')
-        if self.typeOfResultingEntities=='list':
-            self._printListOfDicts()
-        elif self.typeOfResultingEntities=='dict':
-            self._printDict(self.resultingEntities)
+        self.printResultingEntities()
         print(f'status: {self.status}')
         print(f'totalCount: {self.totalCount}')
         print(f'retrievedEntitiesCount: {self.retrievedEntitiesCount}')
@@ -55,18 +52,26 @@ class FiwareAnswer():
         if self.entity is not None:
             print("Entity: ")
             self._printDict(d=self.entity)
+
+    def printResultingEntities(self):
+        print('--Resulting entities--')
+        if self.typeOfResultingEntities=='dict':
+            self._printDict(self.resultingEntities)
+        if self.typeOfResultingEntities=='list':
+            self._printListOfDicts(self.resultingEntities)
             
     def _printDict(self,d):
         print(json.dumps(d, indent=4))
     
-    def _printListOfDicts(self):
-        for d in self.resultingEntities:
+    def _printListOfDicts(self, l):
+        for d in l:
             self._printDict(d) 
+
     def setEntity(self,entity):
         self.entity=entity
-        if self.printFiwareAnswer:
-            print("Entity: ")
-            self._printDict(d=self.entity)
+        #if self.printFiwareAnswer:
+        #   print("Entity: ")
+        #    self._printDict(d=self.entity)
             
     def setResultingEntities(self, resultingEntities):
         self.resultingEntities=resultingEntities
