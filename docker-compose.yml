@@ -1,9 +1,8 @@
-version: '3.8'
 services:
   mongo:
     image: mongo:4.4
     ports:
-      - '27017:27017'
+      - "127.0.0.1:27017:27017"
     command: --nojournal
     volumes: 
       - mongo-data:/data/db
@@ -14,7 +13,7 @@ services:
     links: 
       - mongo
     ports:
-      - "1026:1026"
+      - "127.0.0.1:1026:1026"
     command: -dbhost mongo
     depends_on:
       - mongo
