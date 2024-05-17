@@ -1,11 +1,11 @@
-'''
+"""
 Created on 4 jul 2023
 
 @author: joamona
-'''
+"""
 from myLib.fiware import Fiware
 upv=Fiware()
-dummy=upv.createEntity(etype='Dummy1', ename='K1',attributes={
+dummy=upv.createEntity(etype="Dummy1", ename="K1",attributes={
             "accuracy": {
                 "type": "Float",
                 "value": 3.0

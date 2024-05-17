@@ -26,37 +26,37 @@ class Fiware():
         self.requesResult = None
         self.printInfo=printInfo
         if self.printInfo:
-            print('Fiware class. __init__')
+            print("Fiware class. __init__")
 
     def request(self,url):
         pass
 
     def printRequestResult(self):
         if self.printInfo:
-            print('Fiware class. printRequestResult')
+            print("Fiware class. printRequestResult")
             print("url: " + self.url)
             print("Status code: " + str(self.requesResult.status_code))
             print("Text message: " + self.requesResult.text)
         
     def printMethodName(self,methodName):
         if self.printInfo:
-            print('Fiware class. printMethodName')
+            print("Fiware class. printMethodName")
             print(methodName)
             
     def printDict(self,d):
         if self.printInfo:
-            print('Fiware class. printDict')
+            print("Fiware class. printDict")
         print(json.dumps(d, indent=4))
     
     def printListOfDicts(self,l):
         if self.printInfo:
-            print('Fiware class. printListOfDicts')        
+            print("Fiware class. printListOfDicts")        
         for d in l:
             self.printDict(d) 
             
     def printJson(self,js):
         if self.printInfo:
-            print('Fiware class. printJson')       
+            print("Fiware class. printJson")       
         self.printDict(d=js.json())
 
     def getVersion(self):
@@ -64,7 +64,7 @@ class Fiware():
         res = requests.get(url)
         r=json.dumps(res.json(), indent=4)
         if self.printInfo:
-            print('Fiware class. getVersion')
+            print("Fiware class. getVersion")
             print(f"Request url: {url}")
             print(r)
         return r
@@ -72,7 +72,7 @@ class Fiware():
     def createUrn(self,etype,ename):
         urn = f"urn:ngsi-ld:{self.user}:{etype}:{ename}"
         if self.printInfo:
-            print('Fiware class. createUrn')
+            print("Fiware class. createUrn")
             print(f"urn: {urn}")  
         return urn
     
@@ -112,7 +112,7 @@ class Fiware():
             "payload":payload
             }
         if self.printInfo:
-            print('Fiware class. createEntity')
+            print("Fiware class. createEntity")
             print(json.dumps(entity, indent=4))
         
         return entity
@@ -149,7 +149,7 @@ class Fiware():
         }
 
         if self.printInfo:
-            print('Fiware class. createGeoEntity')
+            print("Fiware class. createGeoEntity")
             print(json.dumps(entity, indent=4))
         return entity
     
@@ -164,7 +164,7 @@ class Fiware():
             data=json.dumps(entity["payload"])
             )
         if self.printInfo:
-            print('Fiware.uploadEntity')
+            print("Fiware.uploadEntity")
             fa=FiwareAnswer(answer=self.requesResult,printInfo=self.printInfo,entity=entity)
         return fa
     
@@ -293,7 +293,7 @@ class Fiware():
     
     def getEntityById(self,entity_id):
         if self.printInfo:
-            print('Fivare.getEntityById')
+            print("Fivare.getEntityById")
         url=self.urlEntities + "/" + entity_id
         self.requesResult=requests.get(url)
         return FiwareAnswer(answer=self.requesResult)
