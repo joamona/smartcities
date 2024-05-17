@@ -7,4 +7,4 @@ from myLib.fiware import Fiware
 from myLib.fiwareAnswer import FiwareAnswer
 upv=Fiware()
 
-fa:FiwareAnswer=upv.getEntityById(entity_id=upv.createUrn(etype='Gate3', ename='A'))
+fa:FiwareAnswer=upv.getEntityById(entity_id=upv.createUrn(etype='Dummy3', ename='K3'))

@@ -5,7 +5,7 @@ Created on 4 jul 2023
 '''
 from myLib.fiware import Fiware
 upv=Fiware()
-dummy=upv.createEntity(etype='Dummy2', ename='K2',attributes={
+dummy=upv.createEntity(etype='Dummy1', ename='K1',attributes={
             "accuracy": {
                 "type": "Float",
                 "value": 3.0

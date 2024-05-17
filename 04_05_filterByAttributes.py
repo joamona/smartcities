@@ -5,6 +5,4 @@ Created on 4 jul 2023
 '''
 from myLib.fiware import Fiware
 upv=Fiware()
-
-le=upv.filterByUserAndProperties(etype='PPPP')
-upv.printListOfDicts(le)
+le=upv.filter(fieldsValuesDict={"username":"joamona","accuracy":3})

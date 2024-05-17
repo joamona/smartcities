@@ -25,38 +25,55 @@ class Fiware():
         self.headers={"Content-Type": "application/json"}
         self.requesResult = None
         self.printInfo=printInfo
+        if self.printInfo:
+            print('Fiware class. __init__')
 
     def request(self,url):
         pass
 
     def printRequestResult(self):
         if self.printInfo:
+            print('Fiware class. printRequestResult')
             print("url: " + self.url)
             print("Status code: " + str(self.requesResult.status_code))
             print("Text message: " + self.requesResult.text)
         
     def printMethodName(self,methodName):
         if self.printInfo:
+            print('Fiware class. printMethodName')
             print(methodName)
             
     def printDict(self,d):
+        if self.printInfo:
+            print('Fiware class. printDict')
         print(json.dumps(d, indent=4))
     
     def printListOfDicts(self,l):
+        if self.printInfo:
+            print('Fiware class. printListOfDicts')        
         for d in l:
             self.printDict(d) 
             
     def printJson(self,js):
+        if self.printInfo:
+            print('Fiware class. printJson')       
         self.printDict(d=js.json())
 
     def getVersion(self):
         url=self.url + "/version"
-        print(f"Url: {url}")
         res = requests.get(url)
-        return json.dumps(res.json(), indent=4)
+        r=json.dumps(res.json(), indent=4)
+        if self.printInfo:
+            print('Fiware class. getVersion')
+            print(f"Request url: {url}")
+            print(r)
+        return r
     
     def createUrn(self,etype,ename):
         urn = f"urn:ngsi-ld:{self.user}:{etype}:{ename}"
+        if self.printInfo:
+            print('Fiware class. createUrn')
+            print(f"urn: {urn}")  
         return urn
     
     def createEntity(self,etype,ename, attributes={}):
@@ -79,8 +96,13 @@ class Fiware():
             "name":{
                 "type":"Text",
                 "value":ename
+                },
+            "username":{
+                "type":"Text",
+                "value":self.user
                 }
             }
+
         for key, value in attributes.items():
             payload[key]=value
             
@@ -89,7 +111,10 @@ class Fiware():
             "name":ename,
             "payload":payload
             }
-        print(json.dumps(entity, indent=4))
+        if self.printInfo:
+            print('Fiware class. createEntity')
+            print(json.dumps(entity, indent=4))
+        
         return entity
     
     def createGeoEntity(self,etype,ename,coordinates, attributes={}):
@@ -102,6 +127,10 @@ class Fiware():
                 "type":"text",
                 "value":ename
                 },
+            "username":{
+                "type":"Text",
+                "value":self.user
+                },
             "location":{
                 "type":"geo:json",
                 "value":{
@@ -110,30 +139,33 @@ class Fiware():
                     }
                 }
             }
-        print("attributes",attributes)
         for key, value in attributes.items():
             payload[key]=value
-        print("payload")
-        print(payload)
+        
         entity={
             "type":etype,
             "name":ename,
             "payload":payload
-            }
-        self.printDict(d=entity)
+        }
+
+        if self.printInfo:
+            print('Fiware class. createGeoEntity')
+            print(json.dumps(entity, indent=4))
         return entity
     
     def uploadEntity(self, entity):
         """
-        Fíjate que lo que se sube e el payload del diccionario
+        Fijate que lo que se sube e el payload del diccionario. 
+        No todo el diccionario.
         """
-        print("Upload entity")
         self.requesResult=requests.post(
             self.urlEntities,
             headers=self.headers,
             data=json.dumps(entity["payload"])
             )
-        fa=FiwareAnswer(answer=self.requesResult,entity=entity)
+        if self.printInfo:
+            print('Fiware.uploadEntity')
+            fa=FiwareAnswer(answer=self.requesResult,printInfo=self.printInfo,entity=entity)
         return fa
     
     def uploadListOfEntities(self,l):
@@ -166,38 +198,59 @@ class Fiware():
         return fa
 
     
-    def filterByUserAndProperties(self, etype=None, fields=None, limit=1000)->FiwareAnswer:
+    def filter(self, idPattern=None, type=None, name=None, fieldsValuesDict=None, limit=1000)->FiwareAnswer:
         """
-        This method gets all the user entities
-        makes several requests to get 1000 entities
-        and join them in one result
+        This method gets all entities that match with all conditions.
+        Makes several interation requests to get 1000 entities,
+        and join them in one result.
+        Parameters:
+            idPattern: search in the id the text idPattern. Can be used to get all entities of a user
+            etype: filter by entity type
+            fieldsValuesDict: dict key:value to filter
+            limit: limit of entities of each iteration
         """
-        parameters = {
-            "idPattern": self.user,
-            "offset": 0,
-        }
-        parameters["limit"] = limit
+        if idPattern is not None:
+            parameters = {
+                "idPattern": idPattern,
+                "offset": 0,
+            }
+        else:
+            parameters={}
+        
+        if limit is not None:
+            parameters["limit"] = limit
 
-        if etype is not None:
-            parameters["type"] = etype
+        if type is not None:
+            parameters["type"] = type
 
-        if fields is not None and isinstance(fields, dict):
-            for key, value in fields.items():
+        if name is not None:
+            if fieldsValuesDict is not None:
+                fieldsValuesDict["name"]=name
+            else:
+                fieldsValuesDict={}
+                fieldsValuesDict["name"]=name
+
+        if fieldsValuesDict is not None and isinstance(fieldsValuesDict, dict):
+            for key, value in fieldsValuesDict.items():
                 parameters["q"] = f"{key}=={value}"
-        print("filterByUserAndProperties. Current parameters:")
-        print(parameters.items())
+        
+        if self.printInfo:
+            print("Fiware.filterByUserAndProperties.Current parameters:")
+            print(parameters.items())
         
         page = 0
         entities = []
         while True:
+            if self.printInfo:
+                print(f"Iteración: {page + 1}")
             response = requests.get(self.urlEntities, params=parameters)
-            fa:FiwareAnswer=FiwareAnswer(answer=response)
             if len(response.json()) == 0:
                 break
+            fa:FiwareAnswer=FiwareAnswer(answer=response,printInfo=self.printInfo)
             entities += response.json()
             page += 1
             parameters["offset"] = page * limit
-        fa=FiwareAnswer(answer=response)
+        fa=FiwareAnswer(answer=response, printInfo=self.printInfo)
         fa.setResultingEntities(resultingEntities=entities)
         return fa
     """
@@ -239,6 +292,8 @@ class Fiware():
     """
     
     def getEntityById(self,entity_id):
+        if self.printInfo:
+            print('Fivare.getEntityById')
         url=self.urlEntities + "/" + entity_id
         self.requesResult=requests.get(url)
         return FiwareAnswer(answer=self.requesResult)
@@ -252,42 +307,34 @@ class Fiware():
             count = None
         return count
     
-    def deleteMyEntityEntityByEtypeEname(self,etype,ename):
-        entity_id = self.createEntity(etype, ename)
-        print(entity_id)
-        if self.user not in entity_id:
-            print("You are not allowed to delete other user entities")
-            return 
-        url = self.urlEntities + "/" + entity_id
-        self.requesResult=requests.delete(url)
-        self.printRequestResult()
-        return f"[{self.requesResult.status_code}]"
-    
-    def deleteMyEntityById(self,entity_id):
+    def deleteEntityById(self,entity_id):
         """
         There is not a feature in Fiware to delete several entities at once
         It is necessary select them and remove them one by one
         """
-        if self.user not in entity_id:
-            print("You are not allowed to delete other user entities")
-            return 
         url = self.urlEntities + "/" + entity_id
+        if self.printInfo:
+            print("Fiware.deleteEntityById")
+            print(f"Deleting entity {url}")
         self.requesResult=requests.delete(url)
-        fa:FiwareAnswer=FiwareAnswer(self.requesResult)
+        fa:FiwareAnswer=FiwareAnswer(self.requesResult,printInfo=self.printInfo)
         return fa
     
-    def deleteAllMyEntities(self):
-        fa1:FiwareAnswer=self.filterByUserAndProperties()
-        print("Deleting entities one by one")
+    def deleteAllEntitiesOfUser(self, username):
+        if self.printInfo:
+            print(f"Fiware.deleteAllEntitiesOfUser. Username: {username}")
+
+        fa1:FiwareAnswer=self.filter(fieldsValuesDict={"username":"joamona"})
         n=len(fa1.resultingEntities)
         results:[FiwareAnswer]=[]
         for i in range(n):
-            print(f"Deleting entity {i+1} of {n}")
+            if self.printInfo:
+                print(f"Deleting entity {i+1} of {n}")
             en=fa1.resultingEntities[i]
             #pay attention. Here the payload field is not
             #when you upload an entity you get the id as en["payload"]["id"]
             #but when you download an entity you simply use en["id"]
-            fa:FiwareAnswer=self.deleteMyEntityById(en["id"])
+            fa:FiwareAnswer=self.deleteEntityById(en["id"])
             fa.entity=en
             results.append(fa)
 

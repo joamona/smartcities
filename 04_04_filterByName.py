@@ -5,5 +5,4 @@ Created on 4 jul 2023
 '''
 from myLib.fiware import Fiware
 upv=Fiware()
-
-upv.filterByIdPatternAndType(idSubString='joamona', etype='PPPP', limit=1000)
+le=upv.filter(name='K4')
