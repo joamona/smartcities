@@ -324,7 +324,7 @@ class Fiware():
         if self.printInfo:
             print(f"Fiware.deleteAllEntitiesOfUser. Username: {username}")
 
-        fa1:FiwareAnswer=self.filter(fieldsValuesDict={"username":"joamona"})
+        fa1:FiwareAnswer=self.filter(fieldsValuesDict={"username":username})
         n=len(fa1.resultingEntities)
         results:[FiwareAnswer]=[]
         for i in range(n):

@@ -5,7 +5,7 @@ Created on 4 jul 2023
 '''
 from myLib.readCsv import ReadCsv
 
-fileName='/home/joamona/www/apps/desweb/smartcities/upv_access_points.csv'
+fileName='/home/joamona/docker/smartcities/upv_access_points.csv'
 csv=ReadCsv(csvFileName=fileName, csvSeparator=',', csvHasHeader=True)
 csv.printConfig()
 csv.printData()
