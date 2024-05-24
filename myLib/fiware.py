@@ -372,6 +372,8 @@ class Fiware():
                                            attributes=attributes)
     
             csvEntities.append(geoEntity)
+            if self.printInfo:
+                self.printListOfDicts(csvEntities)
         return csvEntities
         
         

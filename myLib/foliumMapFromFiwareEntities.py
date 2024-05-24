@@ -32,7 +32,8 @@ class FoliumMapFromFiwareEntities():
         
     def _createmap(self):
         print("Creating folium map")
-        fa:FiwareAnswer=self.upv.filterByUserAndProperties(etype=self.etype)
+        #fa:FiwareAnswer=self.upv.filterByUserAndProperties(etype=self.etype)
+        fa:FiwareAnswer=self.upv.filter(type=self.etype)
         osmLayer=folium.FeatureGroup(name='osm')
         le=fa.resultingEntities
         for entity in le:

@@ -17,7 +17,7 @@ class ReadGtfs(object):
     gtfsStops:[]=None
 
     def __init__(self, 
-                 gtfsFolder='/home/joamona/www/apps/desweb/smartcities/gtfsValencia',
+                 gtfsFolder='/home/joamona/docker/smartcities/gtfsValencia',
                  user='joamona',
                  ):
         '''
