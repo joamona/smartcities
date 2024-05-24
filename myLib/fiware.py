@@ -231,9 +231,17 @@ class Fiware():
                 fieldsValuesDict["name"]=name
 
         if fieldsValuesDict is not None and isinstance(fieldsValuesDict, dict):
+            print(fieldsValuesDict)
+            q=""
             for key, value in fieldsValuesDict.items():
-                parameters["q"] = f"{key}=={value}"
-        
+                print(key,value)
+                #ejemplo: q=temperature<24;humidity==75..90;status==running
+                q=q+f"{key}=={value};"
+                
+            
+            q=q[:-1]#quita el último;
+            parameters["q"] = q
+
         if self.printInfo:
             print("Fiware.filterByUserAndProperties.Current parameters:")
             print(parameters.items())
@@ -248,11 +256,15 @@ class Fiware():
                 break
             fa:FiwareAnswer=FiwareAnswer(answer=response,printInfo=self.printInfo)
             entities += response.json()
+
+            if len(response.json()) <= limit:
+                break
             page += 1
             parameters["offset"] = page * limit
         fa=FiwareAnswer(answer=response, printInfo=self.printInfo)
         fa.setResultingEntities(resultingEntities=entities)
         return fa
+
     """
     def filterByAttributeValue(self, attributeName:str, attributeValue, operator="==", limit=1000):
         #Operator can be >, ==, <
