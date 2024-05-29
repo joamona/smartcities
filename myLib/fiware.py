@@ -16,9 +16,9 @@ from myLib.fiwareAnswer import FiwareAnswer
 from myLib import fiwareSettings
 
 class Fiware():
-    def __init__(self, url=fiwareSettings.SERVER_URL, user=fiwareSettings.USERNAME, printInfo=True):
+    def __init__(self, server_url=fiwareSettings.SERVER_URL, user=fiwareSettings.USERNAME, printInfo=True):
         #attributes
-        self.url=url
+        self.url=server_url
         self.user=user
         self.entities = "/v2/entities"
         self.urlEntities=self.url + self.entities
@@ -165,8 +165,7 @@ class Fiware():
             )
         if self.printInfo:
             print("Fiware.uploadEntity")
-            fa=FiwareAnswer(answer=self.requesResult,printInfo=self.printInfo,entity=entity)
-        return fa
+        return FiwareAnswer(answer=self.requesResult,printInfo=self.printInfo,entity=entity)
     
     def uploadListOfEntities(self,l):
         lStatus=[]
@@ -176,7 +175,40 @@ class Fiware():
             fa=self.uploadEntity(l[i])
             lStatus.append(fa)
         return lStatus
-    
+
+
+    def updateEntityAttributes(self,entityId:str,attributes:dict):
+        """
+        Atributes should be in the format:
+        attributes={
+            "accuracy": {
+                "type": "Float",
+                "value": 3.0
+            },
+            "date": {
+                "type": "Text",
+                "value": "2019-04-15 09:21:20"
+            }
+        }
+        """
+        url= self.urlEntities + '/' + entityId + '/attrs'
+        if self.printInfo:
+            print('Fiware.updateEntityAttributes')
+            print('Before:')
+            print(f'url: {url}')
+            fa:FiwareAnswer = self.getEntityById(entityId)
+
+        self.requesResult = requests.patch(
+            url,
+            headers=self.headers,
+            data=json.dumps(attributes)
+            )
+        if self.printInfo:
+            print(f'Patch operation only returns the status: {self.requesResult}')
+            print('After:')
+            fa:FiwareAnswer = self.getEntityById(entityId)
+
+
     def filterByType(self, etype:str, limit=1000):
         self.url=self.urlEntities + "?type=" + etype + "&limit=" + str(limit)  + "&options=count"
         self.requesResult=requests.get(self.url)
