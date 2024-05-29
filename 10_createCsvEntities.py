@@ -13,5 +13,7 @@ csv.printData()
 
 upv=Fiware()
 
-csvEntities=upv.createCsvEntities(etype="Gate", csvData=csv.csvData, csvHeader=csv.csvHeader)
+csvEntities=upv.createCsvEntities(etype="Gate", csvData=csv.csvData, csvHeader=csv.csvHeader,
+                                  eNameFieldName='PID',
+                                  latLonFieldNames=['Longitude','Latitude'])
 

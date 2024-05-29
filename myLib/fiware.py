@@ -254,7 +254,7 @@ class Fiware():
             response = requests.get(self.urlEntities, params=parameters)
             if len(response.json()) == 0:
                 break
-            fa:FiwareAnswer=FiwareAnswer(answer=response,printInfo=self.printInfo)
+            #fa:FiwareAnswer=FiwareAnswer(answer=response,printInfo=self.printInfo)
             entities += response.json()
 
             if len(response.json()) <= limit:
@@ -281,9 +281,35 @@ class Fiware():
         Means accuracy > 2 and accuracy <5 and mode ==8
         There is not OR condition.
         """
+        if self.printInfo:
+            print('Fiware.filterBySeveralAttributeValueConditions')
         self.url=self.urlEntities + "?q=" + andConditions + "&limit=" + str(limit) + "&options=count"
-        self.requesResult=requests.get(self.url)
-        fa:FiwareAnswer=FiwareAnswer( answer=self.requesResult)
+        #self.requesResult=requests.get(self.url)
+        #fa:FiwareAnswer=FiwareAnswer( answer=self.requesResult)
+
+        page = 0
+        entities = []
+        offset=0
+        while True:
+            if self.printInfo:
+                print(f"Iteración: {page + 1}")
+            response = requests.get(self.url + '&offset=' + str(offset))
+            if len(response.json()) == 0:
+                break
+            #fa:FiwareAnswer=FiwareAnswer(answer=response,printInfo=self.printInfo)
+            entities += response.json()
+
+            if len(response.json()) <= limit:
+                break
+            page += 1
+            offset = page * limit
+        
+        fa=FiwareAnswer(answer=response, printInfo=self.printInfo)
+        fa.setResultingEntities(resultingEntities=entities)
+        #fa=FiwareAnswer(answer=response, printInfo=self.printInfo)
+        #fa.setResultingEntities(resultingEntities=entities)
+        #return fa
+
         return fa
     """
     #this does not retrieve more than 1000 entities          
@@ -332,6 +358,10 @@ class Fiware():
         fa:FiwareAnswer=FiwareAnswer(self.requesResult,printInfo=self.printInfo)
         return fa
     
+    def deleteListOfEntities(self,listOfEntities:list):
+        for e in listOfEntities:
+            self.deleteEntityById(e['id'])
+
     def deleteAllEntitiesOfUser(self, username):
         if self.printInfo:
             print(f"Fiware.deleteAllEntitiesOfUser. Username: {username}")
@@ -350,40 +380,76 @@ class Fiware():
             fa.entity=en
             results.append(fa)
 
-    def createCsvEntities(self, etype, csvData:list, csvHeader:list):
-        #csvData es una lista de listas 
-        #csv header is: ["PID", "LONGITUDE", "LATITUDE", "ACCURACY", "DATE"]
+    def createCsvEntities(self, etype, csvData:list, csvHeader:list, eNameFieldName:str, latLonFieldNames:list=None):
+        #* csvData es is a list of lists [[1,2,...],[2,5,...]]
+        #* The entity name will be the firts field values of each list,
+        #   in the above example, 1, 2, ...  
+        #* csv header is like: ["PID", "LONGITUDE", "LATITUDE", "ACCURACY", "DATE"]
         #ename es PID
+
+        #data checks
+        if len(csvData)==0:
+            print('No data')
+            return []
+        nf=len(csvData[0])
+        if nf ==0:#number of fiels in each reccord
+            print('No data in reccords')
+            return []
+
+        csvHeaderLower=[]
+        for item in csvHeader:
+            csvHeaderLower.append(item.lower())
+
+        try:
+            enameIndex=csvHeaderLower.index(eNameFieldName.lower())
+        except:
+            print(f'{eNameFieldName} is not in the csvHeader')
+            return []
         
-        specialFields=["PID", "LONGITUDE", "LATITUDE"]
-        
+        if latLonFieldNames is not None:
+            try:
+                latIndex=csvHeaderLower.index(latLonFieldNames[0].lower())
+            except:
+                print(f'{latLonFieldNames[0]} is not in the csvHeader')
+                return []
+
+            try:
+                lonIndex=csvHeaderLower.index(latLonFieldNames[1].lower())
+            except:
+                print(f'{latLonFieldNames[1]} is not in the csvHeader')
+                return []
+        #end of data checks
+
         csvEntities=[]
         for record in csvData:
             attributes={}
             for index, fieldName in enumerate(csvHeader):
-                if not fieldName in specialFields:
-                    value=record[index]
-                    if isinstance(value, float):
-                        attributes[fieldName.lower()]={
-                            "type": "Float",
-                            "value": value
-                            }
-                    elif isinstance(value, int):
-                        attributes[fieldName.lower()]={
-                            "type": "Integer",
-                            "value": value
-                            }
-                    else:
-                        attributes[fieldName.lower()]={
-                            "type": "Text",
-                            "value": value
-                            }   
-            geoEntity=self.createGeoEntity(etype=etype, 
-                                           ename=record[0], 
-                                           coordinates=[record[1],record[2]],
+                value=record[index]
+                if isinstance(value, float):
+                    attributes[fieldName.lower()]={
+                        "type": "Float",
+                        "value": value
+                        }
+                elif isinstance(value, int):
+                    attributes[fieldName.lower()]={
+                        "type": "Integer",
+                        "value": value
+                        }
+                else:
+                    attributes[fieldName.lower()]={
+                        "type": "Text",
+                        "value": value
+                        }   
+            if latLonFieldNames is not None:
+                entity=self.createGeoEntity(etype=etype, 
+                                           ename=record[enameIndex], 
+                                           coordinates=[record[latIndex],record[lonIndex]],
                                            attributes=attributes)
-    
-            csvEntities.append(geoEntity)
+            else:
+                entity=self.createEntity(etype=etype, 
+                                           ename=record[enameIndex], 
+                                           attributes=attributes)
+            csvEntities.append(entity)
             if self.printInfo:
                 self.printListOfDicts(csvEntities)
         return csvEntities

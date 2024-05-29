@@ -41,6 +41,7 @@ dummy=upv.createEntity(etype='Dummy3', ename='K3', attributes={
             }
         })
 upv.uploadEntity(entity=dummy)
+
 dummy=upv.createEntity(etype='Dummy3', ename='K4', attributes={
             "accuracy": {
                 "type": "Float",
