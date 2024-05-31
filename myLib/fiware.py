@@ -3,12 +3,8 @@ Created on 2 jun 2023
 
 @author: joamona
 """
-import os
-import json
-import inspect
-import webbrowser
 
-import folium
+import json
 import requests
 #class Fiware
 
@@ -104,7 +100,10 @@ class Fiware():
             }
 
         for key, value in attributes.items():
-            payload[key]=value
+            if key == 'id':
+                payload[key + '1'] = value
+            else:
+                payload[key] = value
             
         entity={
             "type":etype,
@@ -140,7 +139,10 @@ class Fiware():
                 }
             }
         for key, value in attributes.items():
-            payload[key]=value
+            if key == 'id':
+                payload[key + '1'] = value
+            else:
+                payload[key] = value
         
         entity={
             "type":etype,
@@ -179,6 +181,8 @@ class Fiware():
 
     def updateEntityAttributes(self,entityId:str,attributes:dict):
         """
+        Update only updates attributes, does not adds attributes.
+
         Atributes should be in the format:
         attributes={
             "accuracy": {

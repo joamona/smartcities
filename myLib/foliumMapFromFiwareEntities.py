@@ -23,7 +23,7 @@ from myLib.fiwareAnswer import FiwareAnswer
 class FoliumMapFromFiwareEntities():
     """
     Creates a folium map by filtering entities from Fiware.
-    Uses the Fiware.filter methond. The contructor receives exatly
+    Uses the Fiware.filter method. The contructor receives exatly
         the same arguments that Fiware.filter.
 
     
