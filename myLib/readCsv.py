@@ -3,6 +3,7 @@ Created on 15 jun 2023
 
 @author: joamona
 '''
+from typing import Union
 import tkinter
 import tkinter.filedialog
 
@@ -10,7 +11,9 @@ class ReadCsv(object):
     '''
     classdocs
     '''
-    def __init__(self, csvFileName=None, csvSeparator=',', csvHasHeader=True):
+    def __init__(self, csvFileName:str=None, 
+                 csvSeparator:str=',', 
+                 csvHasHeader:bool=True) ->None:
         '''
         Constructor  
         '''
@@ -37,7 +40,7 @@ class ReadCsv(object):
     def printData(self):
         print(self.csvData)
         
-    def _convert(self,string):
+    def _convert(self,string:str)->Union[int,float,None]:
         """
         Convert the string to int, or float, or let the string as string if it can't be 
         converted to either of int or float

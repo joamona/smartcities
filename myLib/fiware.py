@@ -100,7 +100,7 @@ class Fiware():
             }
 
         for key, value in attributes.items():
-            if key == 'id':
+            if key == 'id' or key == 'type':
                 payload[key + '1'] = value
             else:
                 payload[key] = value
@@ -139,7 +139,7 @@ class Fiware():
                 }
             }
         for key, value in attributes.items():
-            if key == 'id':
+            if key == 'id' or key == 'type':
                 payload[key + '1'] = value
             else:
                 payload[key] = value
